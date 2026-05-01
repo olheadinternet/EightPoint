@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="1in"
+   height="1in"
+   viewBox="0 0 1000 1000"
+   version="1.1"
+   id="svg11"
+   sodipodi:docname="8PointPrompt_PlotterFiles.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <title
+     id="title1">8 Point Prompt</title>
+  <defs
+     id="defs11" />
+  <sodipodi:namedview
+     id="namedview11"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="in"
+     inkscape:zoom="3.080232"
+     inkscape:cx="40.743684"
+     inkscape:cy="50.807861"
+     inkscape:current-layer="svg11" />
+  <!-- ENTRY POINTS (invisible anchors) -->
+  <g
+     id="POINTS"
+     fill="none"
+     stroke="none">
+    <!-- top -->
+    <circle
+       cx="333"
+       cy="0"
+       r="1"
+       id="circle1" />
+    <circle
+       cx="666"
+       cy="0"
+       r="1"
+       id="circle2" />
+    <!-- right -->
+    <circle
+       cx="1000"
+       cy="333"
+       r="1"
+       id="circle3" />
+    <circle
+       cx="1000"
+       cy="666"
+       r="1"
+       id="circle4" />
+    <!-- bottom -->
+    <circle
+       cx="666"
+       cy="1000"
+       r="1"
+       id="circle5" />
+    <circle
+       cx="333"
+       cy="1000"
+       r="1"
+       id="circle6" />
+    <!-- left -->
+    <circle
+       cx="0"
+       cy="666"
+       r="1"
+       id="circle7" />
+    <circle
+       cx="0"
+       cy="333"
+       r="1"
+       id="circle8" />
+  </g>
+  <!-- EDIT ONLY THESE PATHS -->
+  <g
+     id="PATHS"
+     stroke="black"
+     stroke-width="20"
+     fill="none"
+     stroke-linecap="round"
+     inkscape:label="PATHS">
+    <!-- path 1 -->
+    <path
+       d="M333,0 C333,200 200,333 0,333"
+       id="path8"
+       style="stroke:#000000;stroke-opacity:1;fill:none" />
+    <!-- path 2 -->
+    <path
+       d="M666,0 C666,200 800,333 1000,333"
+       id="path9"
+       style="stroke:#000000;stroke-opacity:1;fill:none;stroke-width:20;stroke-dasharray:none" />
+    <!-- path 3 -->
+    <path
+       d="M1000,666 C800,666 666,800 666,1000"
+       id="path10"
+       style="stroke:#000000;stroke-opacity:1;fill:none;stroke-width:20;stroke-dasharray:none" />
+    <!-- path 4 -->
+    <path
+       d="M0,666 C200,666 333,800 333,1000"
+       id="path11"
+       style="stroke:#000000;stroke-opacity:1;fill:none;stroke-width:20;stroke-dasharray:none" />
+  </g>
+  <metadata
+     id="metadata1">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <cc:license
+           rdf:resource="http://creativecommons.org/publicdomain/zero/1.0/" />
+        <dc:title>8 Point Prompt</dc:title>
+        <dc:date>4.30.26</dc:date>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Zachary Hendel</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:publisher>
+          <cc:Agent>
+            <dc:title>Plotter Files by Bantam Tools</dc:title>
+          </cc:Agent>
+        </dc:publisher>
+        <dc:source>PlotterFiles.com</dc:source>
+        <dc:description>Design a tile that connects with others to form a larger collaborative plot.
+
+Keep endpoints, stroke width, and connections fixed. Reshape the paths however you like.
+
+Each submission becomes part of a single combined artwork.</dc:description>
+        <dc:subject>
+          <rdf:Bag>
+            <rdf:li>Truchet</rdf:li>
+          </rdf:Bag>
+        </dc:subject>
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/publicdomain/zero/1.0/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+</svg>
