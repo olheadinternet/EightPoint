@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>8-Point Tile Generator</title>
+  <style>
+    :root { font-family: Inter, system-ui, Arial, sans-serif; }
+    body { margin: 0; background: #111; color: #eee; }
+    .layout { display: grid; grid-template-columns: 340px 1fr; min-height: 100vh; }
+    .panel { padding: 16px; border-right: 1px solid #2b2b2b; background: #171717; overflow: auto; }
+    .canvas { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+    h1 { font-size: 1.1rem; margin: 0 0 12px; }
+    h2 { font-size: 0.9rem; margin: 18px 0 8px; color: #cfcfcf; }
+    label { display: grid; grid-template-columns: 1fr 80px; gap: 10px; align-items: center; margin: 6px 0; font-size: 0.88rem; }
+    input[type="range"] { width: 100%; }
+    input[type="number"] { width: 72px; background: #0f0f0f; border: 1px solid #333; color: #fff; padding: 4px; }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    button { background: #2d6dff; border: none; color: white; padding: 10px 12px; border-radius: 8px; cursor: pointer; }
+    button.secondary { background: #333; }
+    .hint { color: #aaa; font-size: 0.8rem; line-height: 1.4; }
+    .preview-wrap { background: #fff; padding: 10px; border-radius: 8px; width: fit-content; max-width: 100%; }
+    .pairs { display: grid; gap: 6px; font-size: 0.85rem; }
+    .pair { display: flex; justify-content: space-between; gap: 8px; background: #222; padding: 6px 8px; border-radius: 6px; }
+    code { color: #b6d7ff; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="panel">
+      <h1>8-Point Tile Generator</h1>
+      <p class="hint">Generates compliant SVG tiles: fixed 1000×1000 canvas, stroke width 20, and exact endpoints. Tweak the curve math, mirror, and randomize for variety.</p>
+
+      <h2>Global Controls</h2>
+      <label>Amplitude <input id="amp" type="number" min="0" max="350" step="1" value="140"></label>
+      <label>Frequency <input id="freq" type="number" min="0" max="8" step="0.1" value="1.2"></label>
+      <label>Phase <input id="phase" type="number" min="-6.3" max="6.3" step="0.1" value="0"></label>
+      <label>Bias <input id="bias" type="number" min="-250" max="250" step="1" value="0"></label>
+      <label>Smoothness <input id="smooth" type="number" min="0.05" max="0.95" step="0.01" value="0.45"></label>
+
+      <h2>Path Variation</h2>
+      <label>Jitter Seed <input id="seed" type="number" min="0" max="99999" step="1" value="42"></label>
+      <label>Jitter Amount <input id="jitter" type="number" min="0" max="120" step="1" value="18"></label>
+
+      <div class="row">
+        <button id="mirrorX" class="secondary">Mirror X</button>
+        <button id="mirrorY" class="secondary">Mirror Y</button>
+        <button id="randomize">Randomize</button>
+      </div>
+      <div class="row">
+        <button id="download">Download SVG</button>
+        <button id="reset" class="secondary">Reset</button>
+      </div>
+
+      <h2>Fixed Pairings (4 paths)</h2>
+      <div class="pairs" id="pairs"></div>
+      <p class="hint">Each endpoint is used exactly once. You can expand this to alternate pairing maps later while keeping rule compliance.</p>
+    </aside>
+
+    <main class="canvas">
+      <div class="preview-wrap" id="preview"></div>
+      <div class="hint">Tip: Downloaded file keeps only required structure (PATHS + invisible POINTS) for clean submission.</div>
+      <pre id="pathData" class="hint"></pre>
+    </main>
+  </div>
+
+  <script>
+    const points = {
+      TL: [333, 0], TR: [666, 0], RT: [1000, 333], RB: [1000, 666],
+      BR: [666, 1000], BL: [333, 1000], LB: [0, 666], LT: [0, 333]
+    };
+
+    const pairs = [
+      ["TL", "LT"],
+      ["TR", "RT"],
+      ["RB", "BR"],
+      ["LB", "BL"]
+    ];
+
+    let mirrorX = 1;
+    let mirrorY = 1;
+
+    const ids = ["amp", "freq", "phase", "bias", "smooth", "seed", "jitter"];
+    const el = Object.fromEntries(ids.map(id => [id, document.getElementById(id)]));
+    const preview = document.getElementById("preview");
+    const pathData = document.getElementById("pathData");
+    document.getElementById("pairs").innerHTML = pairs.map(p => `<div class="pair"><code>${p[0]}</code><span>→</span><code>${p[1]}</code></div>`).join("");
+
+    function prng(n) {
+      const x = Math.sin(n) * 10000;
+      return x - Math.floor(x);
+    }
+
+    function buildPath(start, end, i, cfg) {
+      const [x1, y1] = points[start];
+      const [x2, y2] = points[end];
+      const mx = (x1 + x2) / 2;
+      const my = (y1 + y2) / 2;
+      const dx = x2 - x1;
+      const dy = y2 - y1;
+      const len = Math.hypot(dx, dy) || 1;
+      const nx = -dy / len;
+      const ny = dx / len;
+
+      const osc = Math.sin(cfg.phase + i * cfg.freq) * cfg.amp + cfg.bias;
+      const jitterX = (prng(cfg.seed + i * 17) - 0.5) * 2 * cfg.jitter;
+      const jitterY = (prng(cfg.seed + i * 31) - 0.5) * 2 * cfg.jitter;
+
+      const ox = nx * osc * mirrorX + jitterX;
+      const oy = ny * osc * mirrorY + jitterY;
+
+      const px = mx + ox;
+      const py = my + oy;
+
+      const t = cfg.smooth;
+      const c1x = x1 + (px - x1) * t;
+      const c1y = y1 + (py - y1) * t;
+      const c2x = x2 + (px - x2) * t;
+      const c2y = y2 + (py - y2) * t;
+
+      return `M${x1},${y1} C${c1x.toFixed(2)},${c1y.toFixed(2)} ${c2x.toFixed(2)},${c2y.toFixed(2)} ${x2},${y2}`;
+    }
+
+    function makeSVG(paths) {
+      return `<?xml version="1.0" encoding="UTF-8"?>\n<svg width="1in" height="1in" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">\n  <g id="POINTS" fill="none" stroke="none">\n    <circle cx="333" cy="0" r="1" /><circle cx="666" cy="0" r="1" />\n    <circle cx="1000" cy="333" r="1" /><circle cx="1000" cy="666" r="1" />\n    <circle cx="666" cy="1000" r="1" /><circle cx="333" cy="1000" r="1" />\n    <circle cx="0" cy="666" r="1" /><circle cx="0" cy="333" r="1" />\n  </g>\n  <g id="PATHS" stroke="black" stroke-width="20" fill="none" stroke-linecap="round">\n    ${paths.map(d => `<path d="${d}" />`).join("\n    ")}\n  </g>\n</svg>`;
+    }
+
+    function render() {
+      const cfg = {
+        amp: +el.amp.value,
+        freq: +el.freq.value,
+        phase: +el.phase.value,
+        bias: +el.bias.value,
+        smooth: +el.smooth.value,
+        seed: +el.seed.value,
+        jitter: +el.jitter.value
+      };
+
+      const paths = pairs.map((pair, i) => buildPath(pair[0], pair[1], i, cfg));
+      const svg = makeSVG(paths);
+      preview.innerHTML = svg;
+      const pretty = paths.map((d, i) => `path ${i + 1}: ${d}`).join("\n");
+      pathData.textContent = pretty;
+      return svg;
+    }
+
+    function randomize() {
+      el.amp.value = Math.floor(60 + Math.random() * 220);
+      el.freq.value = (0.4 + Math.random() * 3.6).toFixed(2);
+      el.phase.value = (-3.14 + Math.random() * 6.28).toFixed(2);
+      el.bias.value = Math.floor(-120 + Math.random() * 240);
+      el.smooth.value = (0.2 + Math.random() * 0.55).toFixed(2);
+      el.seed.value = Math.floor(Math.random() * 99999);
+      el.jitter.value = Math.floor(Math.random() * 70);
+      render();
+    }
+
+    ids.forEach(id => el[id].addEventListener("input", render));
+    document.getElementById("mirrorX").addEventListener("click", () => { mirrorX *= -1; render(); });
+    document.getElementById("mirrorY").addEventListener("click", () => { mirrorY *= -1; render(); });
+    document.getElementById("randomize").addEventListener("click", randomize);
+    document.getElementById("reset").addEventListener("click", () => {
+      Object.assign(el.amp, { value: 140 }); Object.assign(el.freq, { value: 1.2 });
+      Object.assign(el.phase, { value: 0 }); Object.assign(el.bias, { value: 0 });
+      Object.assign(el.smooth, { value: 0.45 }); Object.assign(el.seed, { value: 42 });
+      Object.assign(el.jitter, { value: 18 }); mirrorX = 1; mirrorY = 1; render();
+    });
+
+    document.getElementById("download").addEventListener("click", () => {
+      const svg = render();
+      const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `8point-tile-${Date.now()}.svg`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    render();
+  </script>
+</body>
+</html>
